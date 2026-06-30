@@ -1,0 +1,468 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: #f3f4f6;
+  background-color: #010903;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --accent-green: #39e365;
+  --accent-green-glow: rgba(57, 227, 101, 0.4);
+  --dark-bg: #010903;
+  --cardboard-bg: #eddcb9;
+  --cardboard-dark: #ccb993;
+  --cardboard-text: #1d1912;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  cursor: none !important; /* Hide default cursor to show custom cursor */
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  background: #010903;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #010903;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(57, 227, 101, 0.25);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(57, 227, 101, 0.5);
+}
+
+/* Gradient background radial tracking the mouse position */
+.dynamic-glow-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(12, 64, 28, 0.3) 0%,
+    rgba(5, 28, 11, 0.93) 55%,
+    rgba(1, 8, 3, 1) 100%
+  );
+  transition: background 0.05s ease;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 10px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  transition: 0.75s;
+  pointer-events: none;
+}
+.glass-panel:hover::before {
+  left: 100%;
+}
+.glass-panel:hover {
+  transform: translateY(-4px);
+  border-color: rgba(57, 227, 101, 0.3);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.25),
+    0 15px 50px rgba(57, 227, 101, 0.1);
+}
+
+/* Cardboard Panel Texture */
+.cardboard-panel {
+  background-color: var(--cardboard-bg);
+  background-image: 
+    radial-gradient(rgba(0,0,0,0.03) 1px, transparent 0),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.01) 0px, rgba(0,0,0,0.01) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 1px, transparent 1px, transparent 6px);
+  background-size: 8px 8px, 4px 4px, 6px 6px;
+  color: var(--cardboard-text);
+  border-radius: 16px 12px 18px 14px / 14px 18px 12px 16px; /* Organic hand-torn look */
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+  outline: 1.5px solid rgba(135, 115, 85, 0.3);
+  outline-offset: -5px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.15);
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+}
+.cardboard-panel:hover {
+  transform: translateY(-4px) rotate(0.5deg);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Cardboard Paper Snippet details (organic label stick-on look) */
+.cardboard-tag {
+  background: #fbf6eb;
+  color: #3e3323;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: bold;
+  border: 1px solid #d4c2aa;
+  box-shadow: 1px 2px 5px rgba(0,0,0,0.1);
+  display: inline-block;
+  transform: rotate(-1.5deg);
+}
+
+/* Custom Interactive Cursor Overlay */
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-green);
+  border-radius: 50%;
+  z-index: 10000;
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+  box-shadow: 0 0 10px var(--accent-green-glow);
+}
+
+.custom-cursor-lens {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  border: 1px solid rgba(57, 227, 101, 0.4);
+  background-color: rgba(57, 227, 101, 0.03);
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+  backdrop-filter: blur(4px) saturate(180%);
+  -webkit-backdrop-filter: blur(4px) saturate(180%);
+  box-shadow: 
+    inset 0 0 8px rgba(57, 227, 101, 0.15),
+    0 0 20px rgba(57, 227, 101, 0.1);
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-cursor-lens.hovering {
+  width: 90px;
+  height: 90px;
+  background-color: rgba(57, 227, 101, 0.08);
+  border-color: rgba(57, 227, 101, 0.8);
+  box-shadow: 
+    inset 0 0 15px rgba(57, 227, 101, 0.3),
+    0 0 30px rgba(57, 227, 101, 0.25);
+}
+
+/* Canvas container styling */
+.canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: auto; /* Allow interactions with the 3D canvas */
+}
+
+/* UI Content Layout Overlay */
+.content-layer {
+  position: relative;
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass through to canvas if not on buttons/cards */
+  width: 100%;
+}
+
+.content-layer * {
+  pointer-events: auto; /* Enable clicks for all actual text/buttons */
+}
+
+/* Premium Typography Styles */
+h1, h2, h3, h4 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.glow-text {
+  background: linear-gradient(135deg, #ffffff 30%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(57, 227, 101, 0.15);
+}
+
+/* Custom UI Components and Pages */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.navbar {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1200px;
+  height: 64px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.navbar:hover {
+  transform: translate(-50%, -2px) !important;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  height: 38px;
+  width: 38px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(57, 227, 101, 0.4);
+  box-shadow: 0 0 10px rgba(57, 227, 101, 0.2);
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  font-family: 'Outfit', sans-serif;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--accent-green);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #1db845 100%);
+  color: #000000;
+  font-weight: 700;
+  padding: 12px 28px;
+  border-radius: 30px;
+  border: none;
+  cursor: none !important;
+  font-family: 'Outfit', sans-serif;
+  box-shadow: 0 4px 20px rgba(57, 227, 101, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(57, 227, 101, 0.6);
+}
+
+/* Cardboard button variant */
+.btn-cardboard {
+  background: #c3b08b;
+  color: #1d1912;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: 1px solid #8e7a5c;
+  cursor: none !important;
+  font-family: monospace;
+  box-shadow: 2px 2px 0px #8e7a5c;
+  transition: all 0.1s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-cardboard:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #8e7a5c;
+}
+
+/* Course overview page sections */
+.section {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.section-title {
+  font-size: 2.75rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: var(--accent-green);
+  border-radius: 2px;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.course-card-wrapper {
+  perspective: 1000px;
+}
+
+.syllabus-container {
+  margin-top: 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 900px) {
+  .syllabus-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.syllabus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.syllabus-item {
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.syllabus-item-icon {
+  background: rgba(57, 227, 101, 0.15);
+  color: var(--accent-green);
+  border-radius: 50%;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1px solid rgba(57, 227, 101, 0.3);
+}
+
+.syllabus-item-cardboard-icon {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--cardboard-text);
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Nature indicators / floating labels */
+.bio-tag {
+  background: rgba(57, 227, 101, 0.1);
+  color: var(--accent-green);
+  border: 1px solid rgba(57, 227, 101, 0.25);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+/* Glass filter mapping for warp */
+.warp-svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
