@@ -20,6 +20,11 @@
   --cardboard-bg: #eddcb9;
   --cardboard-dark: #ccb993;
   --cardboard-text: #1d1912;
+
+  /* Responsive layout variables */
+  --hero-title-size: 4.5rem;
+  --hero-desc-size: 1.25rem;
+  --card-padding: 2.5rem;
 }
 
 * {
@@ -377,7 +382,7 @@ h1, h2, h3, h4 {
 
 .course-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 3rem;
   margin-top: 2rem;
 }
@@ -465,4 +470,74 @@ h1, h2, h3, h4 {
   width: 0;
   height: 0;
   pointer-events: none;
+}
+
+/* Responsive button container and mobile layout overrides */
+.hero-buttons-container {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --hero-title-size: 2.3rem;
+    --hero-desc-size: 1.05rem;
+    --card-padding: 1.5rem;
+  }
+
+  .navbar {
+    top: 12px;
+    padding: 0 1.25rem;
+    height: 56px;
+    width: 94%;
+  }
+
+  .nav-links {
+    display: none; /* Hide navigation text links on mobile to avoid squishing */
+  }
+
+  .logo-text {
+    font-size: 0.95rem; /* Make logo font size smaller to fit in header bar */
+  }
+
+  .logo-container {
+    gap: 8px;
+  }
+
+  .logo-img {
+    height: 32px;
+    width: 32px;
+  }
+
+  .navbar .btn-primary {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+  }
+
+  .section {
+    padding: 4rem 1.25rem;
+  }
+
+  .section-title {
+    font-size: 2rem !important;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-section {
+    padding: 6rem 1.25rem 3rem 1.25rem;
+  }
+
+  .hero-buttons-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .hero-buttons-container a {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
 }

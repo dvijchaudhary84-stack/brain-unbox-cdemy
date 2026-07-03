@@ -2,8 +2,10 @@ import React, { useRef } from 'react';
 
 export default function InteractiveTilt({ children, className, style, maxRotation = 15, scale = 1.04 }) {
   const cardRef = useRef(null);
+  const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
 
   const handleMouseMove = (e) => {
+    if (isTouch) return;
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
@@ -21,30 +23,8 @@ export default function InteractiveTilt({ children, className, style, maxRotatio
     card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
   };
 
-  const handleTouchMove = (e) => {
-    if (e.touches.length === 0) return;
-    const card = cardRef.current;
-    if (!card) return;
-    const touch = e.touches[0];
-    const rect = card.getBoundingClientRect();
-    
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-    
-    const xc = rect.width / 2;
-    const yc = rect.height / 2;
-    
-    // Clamp inside borders
-    const clampedX = Math.max(0, Math.min(x, rect.width));
-    const clampedY = Math.max(0, Math.min(y, rect.height));
-    
-    const rotateX = -((clampedY - yc) / yc) * maxRotation;
-    const rotateY = ((clampedX - xc) / xc) * maxRotation;
-    
-    card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
-  };
-
   const handleReset = () => {
+    if (isTouch) return;
     const card = cardRef.current;
     if (!card) return;
     // Smooth snap reset
@@ -60,11 +40,8 @@ export default function InteractiveTilt({ children, className, style, maxRotatio
         transition: 'transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease, box-shadow 0.3s ease',
         transformStyle: 'preserve-3d',
       }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleReset}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleReset}
-      onTouchCancel={handleReset}
+      onMouseMove={isTouch ? undefined : handleMouseMove}
+      onMouseLeave={isTouch ? undefined : handleReset}
     >
       {children}
     </div>

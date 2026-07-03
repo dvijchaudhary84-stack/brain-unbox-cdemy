@@ -94,15 +94,15 @@ export default function ContentOverlay() {
 
       {/* Hero Section */}
       <header id="hero" className="hero-section">
-        <div style={{ maxWidth: '800px', margin: '0 auto', zIndex: 2 }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', zIndex: 2, width: '100%' }}>
           <div className="bio-tag">Brain Unbox Academy</div>
-          <h1 className="glow-text" style={{ fontSize: '4.5rem', lineHeight: '1.1', marginBottom: '1.5rem', fontWeight: 800 }}>
+          <h1 className="glow-text" style={{ fontSize: 'var(--hero-title-size, 4.5rem)', lineHeight: '1.1', marginBottom: '1.5rem', fontWeight: 800 }}>
             UNBOX THE MAGIC<br />OF BIOLOGY
           </h1>
-          <p style={{ fontSize: '1.25rem', color: 'rgba(255, 255, 255, 0.75)', marginBottom: '2.5rem', lineHeight: '1.6' }}>
+          <p style={{ fontSize: 'var(--hero-desc-size, 1.25rem)', color: 'rgba(255, 255, 255, 0.75)', marginBottom: '2.5rem', lineHeight: '1.6' }}>
             Interactive 3D-driven biology crash courses tailored for NEET + Board excellence. We break complex ecological and physiological concepts out of flat books into vivid 3D space.
           </p>
-          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+          <div className="hero-buttons-container">
             <a href="#courses" className="btn-primary">Explore Courses</a>
             <a href="#syllabus" className="btn-primary" style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)' }}>View Syllabus</a>
           </div>
@@ -119,7 +119,7 @@ export default function ContentOverlay() {
         <div className="course-grid">
           {/* Class 11 Crash Course - Cardboard Style */}
           <div className="course-card-wrapper">
-            <InteractiveTilt className="cardboard-panel" style={{ padding: '2.5rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <InteractiveTilt className="cardboard-panel" style={{ padding: 'var(--card-padding, 2.5rem)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <img 
                   src="/class11.jpg" 
@@ -166,7 +166,7 @@ export default function ContentOverlay() {
 
           {/* Class 12 Crash Course - Glass Style */}
           <div className="course-card-wrapper">
-            <InteractiveTilt className="glass-panel" style={{ padding: '2.5rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <InteractiveTilt className="glass-panel" style={{ padding: 'var(--card-padding, 2.5rem)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <img 
                   src="/class12.jpg" 
@@ -308,7 +308,7 @@ export default function ContentOverlay() {
       </section>
 
       <section id="enroll" className="section" style={{ minHeight: '80vh' }}>
-        <InteractiveTilt className="glass-panel" style={{ maxWidth: '650px', margin: '0 auto', padding: '3rem' }}>
+        <InteractiveTilt className="glass-panel" style={{ maxWidth: '650px', margin: '0 auto', padding: 'var(--card-padding, 3rem)' }}>
           <h2 style={{ fontSize: '2.25rem', marginBottom: '0.5rem', textAlign: 'center' }}>Secure Your Admission</h2>
           <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.6)', marginBottom: '2.5rem' }}>
             Submit your contact details and select your crash course level. Our expert teacher will connect with you within 24 hours.
