@@ -6,33 +6,16 @@ import NatureScene from './components/NatureScene';
 import ContentOverlay from './components/ContentOverlay';
 
 export default function App() {
+  const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
   useEffect(() => {
     // Hidden on touch screen devices
-    if (window.matchMedia('(pointer: coarse)').matches) {
+    if (isTouch) {
       document.body.style.cursor = 'auto';
       const styles = document.createElement('style');
       styles.innerHTML = '* { cursor: auto !important; }';
       document.head.appendChild(styles);
     }
-
-    // Initialize Lenis smooth scroll
-    const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Smooth exponential deceleration
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
-      infinite: false,
-    });
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
 
     // Initial 3D camera target state
     window.__natureTarget = { x: 0, y: 0, z: 5, rx: 0, ry: 0 };
@@ -42,11 +25,6 @@ export default function App() {
       const progress = scroll / limit || 0;
 
       // Define camera positions for choreography
-      // 0.0 (Hero): camera straight ahead at (0, 0, 5)
-      // 0.35 (Courses): zoom in and slide slightly to the right
-      // 0.70 (Syllabus): rotate to side angle and pan down
-      // 1.0 (Enroll): close-up on the nest, showing the glowing eggs clearly
-      
       const targetX = Math.sin(progress * Math.PI) * 1.6;
       const targetY = -progress * 2.2;
       const targetZ = 5 - progress * 2.4; // Zoom into the nest
@@ -62,12 +40,43 @@ export default function App() {
       };
     };
 
-    lenis.on('scroll', handleScroll);
+    let lenis;
+    let handleNativeScroll;
+
+    if (!isTouch) {
+      // Initialize Lenis smooth scroll ONLY on non-touch screens (Desktop)
+      lenis = new Lenis({
+        duration: 1.4,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Smooth exponential deceleration
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1.0,
+        infinite: false,
+      });
+
+      const raf = (time) => {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+
+      lenis.on('scroll', handleScroll);
+    } else {
+      // Direct native scroll binding on mobile/touch screen devices for 60fps scrolling
+      handleNativeScroll = () => {
+        const scroll = window.scrollY;
+        const limit = document.documentElement.scrollHeight - window.innerHeight;
+        handleScroll({ scroll, limit });
+      };
+      window.addEventListener('scroll', handleNativeScroll, { passive: true });
+    }
 
     return () => {
-      lenis.destroy();
+      if (lenis) lenis.destroy();
+      if (handleNativeScroll) window.removeEventListener('scroll', handleNativeScroll);
     };
-  }, []);
+  }, [isTouch]);
 
   return (
     <>
@@ -77,9 +86,14 @@ export default function App() {
       {/* Persistent WebGL Canvas background */}
       <div className="canvas-container">
         <Canvas 
-          shadows 
+          shadows={!isTouch} 
           camera={{ position: [0, 0, 5], fov: 45, near: 0.1, far: 50 }}
-          gl={{ antialias: true, alpha: true }}
+          dpr={[1, 1.5]}
+          gl={{ 
+            antialias: !isTouch, 
+            alpha: true, 
+            powerPreference: 'high-performance' 
+          }}
         >
           <NatureScene />
         </Canvas>

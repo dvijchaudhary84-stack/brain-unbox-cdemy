@@ -205,7 +205,7 @@ function CanopyButterfly({ position, scale = 1, speed = 2, orbitRadius = 2.2, wi
 }
 
 // 4. Ultra High-Performance Heavy Grass Carpet (65,000 blades initialized statically for zero CPU overhead)
-function InstancedGrassCarpet({ count = 65000 }) {
+function InstancedGrassCarpet({ count = 65000, isMobile = false }) {
   const meshRef = useRef();
 
   useMemo(() => {
@@ -242,7 +242,7 @@ function InstancedGrassCarpet({ count = 65000 }) {
   }, [count]);
 
   return (
-    <instancedMesh ref={meshRef} args={[null, null, count]} castShadow receiveShadow>
+    <instancedMesh ref={meshRef} args={[null, null, count]} castShadow={!isMobile} receiveShadow={!isMobile}>
       <coneGeometry args={[1, 1, 4]} />
       <meshStandardMaterial 
         color="#156e21" 
@@ -481,10 +481,17 @@ export default function NatureScene() {
   const forestRef = useRef();
   const lightRef = useRef();
 
-  // Dense Jungle Tree layout (increased to 42 trees for Discovery-like density)
+  const isMobile = useMemo(() => {
+    return typeof window !== 'undefined' && (
+      window.matchMedia('(max-width: 768px)').matches || 
+      window.matchMedia('(pointer: coarse)').matches
+    );
+  }, []);
+
+  // Dense Jungle Tree layout (increased to 42 trees on desktop, reduced to 12 on mobile for memory safety)
   const trees = useMemo(() => {
     const list = [];
-    const count = 42;
+    const count = isMobile ? 12 : 42;
     for (let i = 0; i < count; i++) {
       const angle = (i / count) * Math.PI * 2 + (Math.random() * 0.4);
       const radius = 3.6 + Math.random() * 7.5;
@@ -495,7 +502,7 @@ export default function NatureScene() {
       list.push({ x, z, height, scale });
     }
     return list;
-  }, []);
+  }, [isMobile]);
 
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
@@ -521,9 +528,9 @@ export default function NatureScene() {
         position={[12, 16, 6]} 
         intensity={3.4} 
         color="#fff4d9" 
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        castShadow={!isMobile}
+        shadow-mapSize-width={isMobile ? 512 : 2048}
+        shadow-mapSize-height={isMobile ? 512 : 2048}
         shadow-bias={-0.0005}
       />
 
@@ -531,24 +538,32 @@ export default function NatureScene() {
       <pointLight position={[-4, 2, -3]} intensity={1.5} color="#39e365" distance={10} />
       <pointLight position={[4, 1.5, -2]} intensity={1.5} color="#39e365" distance={10} />
 
-      <Fireflies count={400} />
+      <Fireflies count={isMobile ? 100 : 400} />
 
       {/* Orbiting Multi-colored Swallow Birds */}
       <CanopyBird position={[0, 1.8, 0]} scale={1.2} speed={4.5} orbitRadius={4.5} direction={1} verticalOffset={0.5} bodyColor="#39e365" wingColor="#1db845" tailColor="#1db845" />
-      <CanopyBird position={[0, -0.2, 0]} scale={0.95} speed={3.5} orbitRadius={3.8} direction={-1} verticalOffset={-0.2} bodyColor="#00d4ff" wingColor="#005b96" tailColor="#003b6f" />
-      <CanopyBird position={[0, 0.8, 0]} scale={1.1} speed={4.0} orbitRadius={5.2} direction={1} verticalOffset={0.2} bodyColor="#ff9e00" wingColor="#d97706" tailColor="#b45309" />
-      <CanopyBird position={[0, 2.4, 0]} scale={1.0} speed={4.8} orbitRadius={4.8} direction={-1} verticalOffset={1.0} bodyColor="#ef4444" wingColor="#b91c1c" tailColor="#991b1b" />
+      {!isMobile && (
+        <>
+          <CanopyBird position={[0, -0.2, 0]} scale={0.95} speed={3.5} orbitRadius={3.8} direction={-1} verticalOffset={-0.2} bodyColor="#00d4ff" wingColor="#005b96" tailColor="#003b6f" />
+          <CanopyBird position={[0, 0.8, 0]} scale={1.1} speed={4.0} orbitRadius={5.2} direction={1} verticalOffset={0.2} bodyColor="#ff9e00" wingColor="#d97706" tailColor="#b45309" />
+          <CanopyBird position={[0, 2.4, 0]} scale={1.0} speed={4.8} orbitRadius={4.8} direction={-1} verticalOffset={1.0} bodyColor="#ef4444" wingColor="#b91c1c" tailColor="#991b1b" />
+        </>
+      )}
       <CanopyBird position={[0, -1.0, 0]} scale={0.9} speed={3.8} orbitRadius={4.2} direction={1} verticalOffset={-0.7} bodyColor="#ff007f" wingColor="#b5006b" tailColor="#8a0052" />
 
       {/* Orbiting Butterflies */}
       <CanopyButterfly position={[0, -1.5, 0]} scale={1.1} speed={2.8} orbitRadius={2.0} wingColor="#ff6b00" direction={1} verticalOffset={-0.5} />
-      <CanopyButterfly position={[0, -1.0, 0]} scale={1.0} speed={2.2} orbitRadius={2.5} wingColor="#8b5cf6" direction={-1} verticalOffset={-0.1} />
-      <CanopyButterfly position={[0, -0.6, 0]} scale={0.9} speed={2.5} orbitRadius={1.8} wingColor="#06b6d4" direction={1} verticalOffset={0.2} />
+      {!isMobile && (
+        <>
+          <CanopyButterfly position={[0, -1.0, 0]} scale={1.0} speed={2.2} orbitRadius={2.5} wingColor="#8b5cf6" direction={-1} verticalOffset={-0.1} />
+          <CanopyButterfly position={[0, -0.6, 0]} scale={0.9} speed={2.5} orbitRadius={1.8} wingColor="#06b6d4" direction={1} verticalOffset={0.2} />
+        </>
+      )}
 
       <group ref={forestRef}>
         
         {/* Ground plane */}
-        <mesh position={[0, -2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <mesh position={[0, -2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow={!isMobile}>
           <planeGeometry args={[100, 100]} />
           <meshStandardMaterial 
             color="#051708" 
@@ -557,8 +572,8 @@ export default function NatureScene() {
           />
         </mesh>
 
-        {/* 65,000 Instanced Blades representing a hyper-dense photorealistic mossy lawn carpet */}
-        <InstancedGrassCarpet count={65000} />
+        {/* Instanced Blades representing a dense photorealistic mossy lawn carpet (reduced on mobile for smooth performance) */}
+        <InstancedGrassCarpet count={isMobile ? 3500 : 65000} isMobile={isMobile} />
 
         {/* Scattered Jungle Trees */}
         {trees.map((t, idx) => (
@@ -581,7 +596,7 @@ export default function NatureScene() {
         {/* THE CENTRAL CANOPY TREE */}
         <group position={[0, -2.5, 0]}>
           
-          <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+          <mesh position={[0, 1.5, 0]} castShadow={!isMobile} receiveShadow={!isMobile}>
             <cylinderGeometry args={[0.15, 0.35, 3.0, 32]} />
             <meshStandardMaterial color="#4d3b2b" roughness={0.9} />
           </mesh>
@@ -593,7 +608,7 @@ export default function NatureScene() {
                 key={i} 
                 position={[Math.cos(angle) * 0.4, 0.05, Math.sin(angle) * 0.4]} 
                 rotation={[0.3, -angle, 0]}
-                castShadow
+                castShadow={!isMobile}
               >
                 <cylinderGeometry args={[0.08, 0.18, 0.8, 16]} />
                 <meshStandardMaterial color="#4d3b2b" roughness={0.9} />
@@ -601,11 +616,11 @@ export default function NatureScene() {
             );
           })}
 
-          <mesh position={[-0.35, 3.1, 0.25]} rotation={[0, 0, -0.45]} castShadow>
+          <mesh position={[-0.35, 3.1, 0.25]} rotation={[0, 0, -0.45]} castShadow={!isMobile}>
             <cylinderGeometry args={[0.08, 0.15, 1.2, 24]} />
             <meshStandardMaterial color="#4d3b2b" roughness={0.9} />
           </mesh>
-          <mesh position={[0.35, 3.2, -0.2]} rotation={[0, 0, 0.45]} castShadow>
+          <mesh position={[0.35, 3.2, -0.2]} rotation={[0, 0, 0.45]} castShadow={!isMobile}>
             <cylinderGeometry args={[0.07, 0.14, 1.3, 24]} />
             <meshStandardMaterial color="#4d3b2b" roughness={0.9} />
           </mesh>
@@ -617,15 +632,15 @@ export default function NatureScene() {
           {/* Climbing Lizard */}
           <JungleLizard position={[0.18, 1.6, 0.1]} rotation={[0, -0.2, 0]} scale={0.45} />
 
-          <mesh position={[0, 3.8, 0]} castShadow>
+          <mesh position={[0, 3.8, 0]} castShadow={!isMobile}>
             <sphereGeometry args={[1.6, 64, 64]} />
             <meshPhysicalMaterial color="#135c24" roughness={0.7} transparent opacity={0.95} />
           </mesh>
-          <mesh position={[-1.1, 3.5, 0.7]} castShadow>
+          <mesh position={[-1.1, 3.5, 0.7]} castShadow={!isMobile}>
             <sphereGeometry args={[1.1, 48, 48]} />
             <meshPhysicalMaterial color="#1a7531" roughness={0.7} />
           </mesh>
-          <mesh position={[1.2, 3.6, -0.6]} castShadow>
+          <mesh position={[1.2, 3.6, -0.6]} castShadow={!isMobile}>
             <sphereGeometry args={[1.0, 48, 48]} />
             <meshPhysicalMaterial color="#2da84a" roughness={0.7} />
           </mesh>
@@ -636,19 +651,19 @@ export default function NatureScene() {
               const angle = (idx / 14) * Math.PI * 2;
               const rad = 0.55 + Math.sin(idx) * 0.08;
               return (
-                <mesh key={idx} rotation={[Math.sin(idx)*0.22, angle, 0]} castShadow>
+                <mesh key={idx} rotation={[Math.sin(idx)*0.22, angle, 0]} castShadow={!isMobile}>
                   <torusGeometry args={[rad, 0.032, 24, 48]} />
                   <meshStandardMaterial color="#6a533b" roughness={0.95} />
                 </mesh>
               );
             })}
             
-            <mesh position={[-0.12, 0.1, -0.05]} rotation={[0.3, 0.2, -0.2]} castShadow>
+            <mesh position={[-0.12, 0.1, -0.05]} rotation={[0.3, 0.2, -0.2]} castShadow={!isMobile}>
               <sphereGeometry args={[0.13, 64, 64]} scale={[1, 1.35, 1]} />
               <meshPhysicalMaterial color="#39e365" transparent opacity={0.88} transmission={0.9} thickness={0.5} ior={1.45} roughness={0.05} clearcoat={1.0} />
             </mesh>
 
-            <mesh position={[0.12, 0.12, 0.05]} rotation={[-0.3, -0.3, 0.3]} castShadow>
+            <mesh position={[0.12, 0.12, 0.05]} rotation={[-0.3, -0.3, 0.3]} castShadow={!isMobile}>
               <sphereGeometry args={[0.14, 64, 64]} scale={[1, 1.38, 1]} />
               <meshPhysicalMaterial color="#ffffff" transparent opacity={0.9} transmission={0.95} thickness={0.6} ior={1.5} roughness={0.03} clearcoat={1.0} />
             </mesh>
