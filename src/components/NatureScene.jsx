@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -481,11 +481,18 @@ export default function NatureScene() {
   const forestRef = useRef();
   const lightRef = useRef();
 
-  const isMobile = useMemo(() => {
-    return typeof window !== 'undefined' && (
-      window.matchMedia('(max-width: 768px)').matches || 
-      window.matchMedia('(pointer: coarse)').matches
-    );
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const mobileWidth = window.innerWidth <= 768;
+      const touchDevice = window.matchMedia('(pointer: coarse)').matches;
+      setIsMobile(mobileWidth || touchDevice);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
   // Dense Jungle Tree layout (increased to 42 trees on desktop, reduced to 12 on mobile for memory safety)
@@ -538,7 +545,7 @@ export default function NatureScene() {
       <pointLight position={[-4, 2, -3]} intensity={1.5} color="#39e365" distance={10} />
       <pointLight position={[4, 1.5, -2]} intensity={1.5} color="#39e365" distance={10} />
 
-      <Fireflies count={isMobile ? 100 : 400} />
+      <Fireflies key={isMobile ? 'mobile' : 'desktop'} count={isMobile ? 100 : 400} />
 
       {/* Orbiting Multi-colored Swallow Birds */}
       <CanopyBird position={[0, 1.8, 0]} scale={1.2} speed={4.5} orbitRadius={4.5} direction={1} verticalOffset={0.5} bodyColor="#39e365" wingColor="#1db845" tailColor="#1db845" />
@@ -573,7 +580,7 @@ export default function NatureScene() {
         </mesh>
 
         {/* Instanced Blades representing a dense photorealistic mossy lawn carpet (reduced on mobile for smooth performance) */}
-        <InstancedGrassCarpet count={isMobile ? 3500 : 65000} isMobile={isMobile} />
+        <InstancedGrassCarpet key={isMobile ? 'mobile' : 'desktop'} count={isMobile ? 3500 : 65000} isMobile={isMobile} />
 
         {/* Scattered Jungle Trees */}
         {trees.map((t, idx) => (

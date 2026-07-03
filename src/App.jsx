@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import Lenis from 'lenis';
 import CustomCursor from './components/CustomCursor';
@@ -6,11 +6,23 @@ import NatureScene from './components/NatureScene';
 import ContentOverlay from './components/ContentOverlay';
 
 export default function App() {
-  const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const mobileWidth = window.innerWidth <= 768;
+      const touchDevice = window.matchMedia('(pointer: coarse)').matches;
+      setIsMobile(mobileWidth || touchDevice);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   useEffect(() => {
     // Hidden on touch screen devices
-    if (isTouch) {
+    if (isMobile) {
       document.body.style.cursor = 'auto';
       const styles = document.createElement('style');
       styles.innerHTML = '* { cursor: auto !important; }';
@@ -24,7 +36,6 @@ export default function App() {
     const handleScroll = ({ scroll, limit }) => {
       const progress = scroll / limit || 0;
 
-      // Define camera positions for choreography
       const targetX = Math.sin(progress * Math.PI) * 1.6;
       const targetY = -progress * 2.2;
       const targetZ = 5 - progress * 2.4; // Zoom into the nest
@@ -43,7 +54,7 @@ export default function App() {
     let lenis;
     let handleNativeScroll;
 
-    if (!isTouch) {
+    if (!isMobile) {
       // Initialize Lenis smooth scroll ONLY on non-touch screens (Desktop)
       lenis = new Lenis({
         duration: 1.4,
@@ -76,7 +87,7 @@ export default function App() {
       if (lenis) lenis.destroy();
       if (handleNativeScroll) window.removeEventListener('scroll', handleNativeScroll);
     };
-  }, [isTouch]);
+  }, [isMobile]);
 
   return (
     <>
@@ -86,16 +97,16 @@ export default function App() {
       {/* Persistent WebGL Canvas background */}
       <div className="canvas-container">
         <Canvas 
-          shadows={!isTouch} 
+          shadows={!isMobile} 
           camera={{ position: [0, 0, 5], fov: 45, near: 0.1, far: 50 }}
           dpr={[1, 1.5]}
           gl={{ 
-            antialias: !isTouch, 
+            antialias: !isMobile, 
             alpha: true, 
             powerPreference: 'high-performance' 
           }}
         >
-          <NatureScene />
+          <NatureScene key={isMobile ? 'mobile' : 'desktop'} />
         </Canvas>
       </div>
 
