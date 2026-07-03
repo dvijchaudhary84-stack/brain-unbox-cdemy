@@ -6,7 +6,10 @@ import NatureScene from './components/NatureScene';
 import ContentOverlay from './components/ContentOverlay';
 
 export default function App() {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches;
+  });
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -15,7 +18,6 @@ export default function App() {
       setIsMobile(mobileWidth || touchDevice);
     };
 
-    checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);

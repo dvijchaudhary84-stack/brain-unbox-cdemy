@@ -481,7 +481,10 @@ export default function NatureScene() {
   const forestRef = useRef();
   const lightRef = useRef();
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches;
+  });
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -490,7 +493,6 @@ export default function NatureScene() {
       setIsMobile(mobileWidth || touchDevice);
     };
 
-    checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
@@ -667,12 +669,20 @@ export default function NatureScene() {
             
             <mesh position={[-0.12, 0.1, -0.05]} rotation={[0.3, 0.2, -0.2]} castShadow={!isMobile}>
               <sphereGeometry args={[0.13, 64, 64]} scale={[1, 1.35, 1]} />
-              <meshPhysicalMaterial color="#39e365" transparent opacity={0.88} transmission={0.9} thickness={0.5} ior={1.45} roughness={0.05} clearcoat={1.0} />
+              {isMobile ? (
+                <meshStandardMaterial color="#39e365" roughness={0.3} metalness={0.1} transparent opacity={0.7} />
+              ) : (
+                <meshPhysicalMaterial color="#39e365" transparent opacity={0.88} transmission={0.9} thickness={0.5} ior={1.45} roughness={0.05} clearcoat={1.0} />
+              )}
             </mesh>
 
             <mesh position={[0.12, 0.12, 0.05]} rotation={[-0.3, -0.3, 0.3]} castShadow={!isMobile}>
               <sphereGeometry args={[0.14, 64, 64]} scale={[1, 1.38, 1]} />
-              <meshPhysicalMaterial color="#ffffff" transparent opacity={0.9} transmission={0.95} thickness={0.6} ior={1.5} roughness={0.03} clearcoat={1.0} />
+              {isMobile ? (
+                <meshStandardMaterial color="#ffffff" roughness={0.2} metalness={0.1} transparent opacity={0.85} />
+              ) : (
+                <meshPhysicalMaterial color="#ffffff" transparent opacity={0.9} transmission={0.95} thickness={0.6} ior={1.5} roughness={0.03} clearcoat={1.0} />
+              )}
             </mesh>
           </group>
 
