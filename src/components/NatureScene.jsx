@@ -476,31 +476,17 @@ function Fireflies({ count = 350 }) {
 }
 
 // Main 3D Lively Jungle Environment
-export default function NatureScene() {
+export default function NatureScene({ viewMode = 'desktop' }) {
   const { camera } = useThree();
   const forestRef = useRef();
   const lightRef = useRef();
 
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches;
-  });
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      const mobileWidth = window.innerWidth <= 768;
-      const touchDevice = window.matchMedia('(pointer: coarse)').matches;
-      setIsMobile(mobileWidth || touchDevice);
-    };
-
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
+  const isMobile = viewMode === 'mobile';
 
   // Dense Jungle Tree layout (increased to 42 trees on desktop, reduced to 12 on mobile for memory safety)
   const trees = useMemo(() => {
     const list = [];
-    const count = isMobile ? 12 : 42;
+    const count = isMobile ? 4 : 42;
     for (let i = 0; i < count; i++) {
       const angle = (i / count) * Math.PI * 2 + (Math.random() * 0.4);
       const radius = 3.6 + Math.random() * 7.5;
@@ -582,7 +568,7 @@ export default function NatureScene() {
         </mesh>
 
         {/* Instanced Blades representing a dense photorealistic mossy lawn carpet (reduced on mobile for smooth performance) */}
-        <InstancedGrassCarpet key={isMobile ? 'mobile' : 'desktop'} count={isMobile ? 3500 : 65000} isMobile={isMobile} />
+        <InstancedGrassCarpet key={isMobile ? 'mobile' : 'desktop'} count={isMobile ? 800 : 65000} isMobile={isMobile} />
 
         {/* Scattered Jungle Trees */}
         {trees.map((t, idx) => (
