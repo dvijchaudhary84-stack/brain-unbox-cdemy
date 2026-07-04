@@ -158,7 +158,7 @@ export default function ContentOverlay({ viewMode, setViewMode }) {
               
               <div className="mobile-hero-details">
                 <div className="detail-item">🌱 <strong>Crash Course:</strong> 4 Months complete fast-track</div>
-                <div className="detail-item">📅 <strong>Batch:</strong> 10 July – 10 November</div>
+                <div className="detail-item">📅 <strong>Batch:</strong> 10 July 2026 – 10 November 2026</div>
                 <div className="detail-item">💰 <strong>Fee:</strong> ₹5000 only (complete prep)</div>
                 <div className="detail-item">⭐ <strong>Highlights:</strong> Sunday weekly Test & Worksheet discussions</div>
               </div>
