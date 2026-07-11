@@ -30,20 +30,11 @@ export default function App() {
   const isMobileLayout = viewMode === 'mobile' || (viewMode === null && detectedMobile);
 
   useEffect(() => {
-    // Hide custom cursor on mobile layout
-    if (isMobileLayout) {
-      document.body.style.cursor = 'auto';
-      const styles = document.createElement('style');
-      styles.innerHTML = '* { cursor: auto !important; }';
-      document.head.appendChild(styles);
+    // Toggle body class for hiding default cursor (only active in desktop mode)
+    if (viewMode === 'desktop') {
+      document.body.classList.add('custom-cursor-active');
     } else {
-      document.body.style.cursor = 'none';
-      const styleElements = document.head.querySelectorAll('style');
-      styleElements.forEach(s => {
-        if (s.innerHTML.includes('* { cursor: auto !important; }')) {
-          s.remove();
-        }
-      });
+      document.body.classList.remove('custom-cursor-active');
     }
 
     // Initial 3D camera target state

@@ -31,7 +31,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  cursor: none !important; /* Hide default cursor to show custom cursor */
+}
+
+body.custom-cursor-active,
+body.custom-cursor-active * {
+  cursor: none !important;
 }
 
 html, body {
